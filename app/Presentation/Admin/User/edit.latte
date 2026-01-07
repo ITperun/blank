@@ -1,0 +1,19 @@
+{block content}
+<h2>Upravit uživatele</h2>
+{snippet userImage}
+{if $userData->image}
+    <img src="{$basePath}/{$userData->image}" alt="Avatar"
+         style="width:40px; height:40px; border-radius:50%;">
+    <a n:href="deleteImage! $userData->id" class="ajax btn btn-sm btn-danger">
+        Smazat obrázek
+    </a>
+{else}
+    <p>Obrázek chybí</p>
+{/if}
+{/snippet}
+
+
+
+
+{control editForm}
+{/block}

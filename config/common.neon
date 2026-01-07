@@ -1,0 +1,15 @@
+# Application parameters and settings. See https://doc.nette.org/configuring
+
+parameters:
+
+
+application:
+	# Presenter mapping pattern
+	mapping: App\Presentation\*\**Presenter
+
+
+database:
+	# SQLite database source location
+	dsn: 'sqlite:%rootDir%/data/db.sqlite'
+	user:
+	password:
