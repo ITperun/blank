@@ -31,4 +31,9 @@ final class PostFacade
 			->where('content LIKE ? OR title LIKE ?', $keyword, $keyword)
 			->fetchAll();
 	}
+
+	public function deletePost(int $id): void
+{
+    $this->database->table('posts')->where('id', $id)->delete();
+}
 }
