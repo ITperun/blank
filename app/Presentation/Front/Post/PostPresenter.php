@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Front\Post;
 
-use App\Model\Facade\PostFacade; // Added correct namespace
+use App\Model\PostFacade; // Added correct namespace
 use Contributte\Datagrid\Datagrid;
 use Nette\Application\UI\Presenter;
 
