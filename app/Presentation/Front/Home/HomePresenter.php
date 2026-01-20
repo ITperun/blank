@@ -22,7 +22,7 @@ final class HomePresenter extends Presenter
     public function handleSendEmail(): void
     {
         $mail = $this->mailSender->createNotificationEmail(
-            "zakaznik@seznam.cz",
+            "ilyaperun@gmail.com",
             "Martin Kokes", 
             "Autíčko Burago Hyundai IONIQ5", 
             "Prosím o zelenou barvu"

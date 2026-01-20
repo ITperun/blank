@@ -29,7 +29,7 @@ class MailSender
 
         // Создаем объект сообщения
         $mail = new Message;
-        $mail->setFrom('rucickaigor@seznam.cz', 'E-shop MOP'); // Укажи здесь тот же email, что в конфиге
+        $mail->setFrom('ilyaperun@seznam.cz', 'E-shop MOP'); // Укажи здесь тот же email, что в конфиге
         $mail->addTo($recipient);
         $mail->setSubject('Nová objednávka: ' . $item);
         $mail->setHtmlBody((string) $template);
@@ -39,12 +39,8 @@ class MailSender
 
     // Универсальный метод отправки
     public function sendEmail(Message $mail): void
-    {
-        try {
-            $this->mailer->send($mail);
-        } catch (\Exception $e) {
-            // Логируем ошибку или выбрасываем дальше, если нужно
-            // Tracy\Debugger::log($e);
-        }
-    }
+{
+
+    $this->mailer->send($mail); 
+}
 }

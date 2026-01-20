@@ -7,6 +7,6 @@ mail:
 	smtp: true
 	host: smtp.seznam.cz
 	port: 465
-	username: "tester@seznam.cz"
-	password: "testovaci123"
+	username: "ilyaperun@seznam.cz"
+	password: "MX.SRvb$2wx!SCp"
 	encryption: ssl
