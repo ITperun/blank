@@ -3,6 +3,8 @@
 services:
 	- App\Core\RouterFactory::createRouter
 	- App\Model\PostFacade
+	- App\Model\UserFacade
+	- App\MailSender\MailSender
 
 
 search:

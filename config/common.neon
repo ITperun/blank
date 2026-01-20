@@ -13,3 +13,6 @@ database:
 	dsn: 'sqlite:%rootDir%/data/db.sqlite'
 	user:
 	password:
+
+mail:
+	smtp: true
