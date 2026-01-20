@@ -21,7 +21,7 @@ final class RouterFactory
 
         // Front модуль
         $frontRouter = new RouteList('Front');
-        $frontRouter->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
+        $frontRouter->addRoute('front/<presenter>/<action>[/<id>]', 'Home:default');
         $router->add($frontRouter);
 
         return $router;
