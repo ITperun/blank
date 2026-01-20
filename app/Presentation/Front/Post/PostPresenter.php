@@ -57,31 +57,65 @@ final class PostPresenter extends Presenter
 
     // Открывается при нажатии кнопки "Detail"
     public function renderDetail(int $id): void
-    {
-        // Здесь мы должны найти пост по ID, но у нас в PostFacade пока нет простого getById.
-        // Для примера просто передадим ID. В идеале нужно: $this->template->post = $this->postFacade->getById($id);
-        $this->template->postId = $id;
+{
+    $post = $this->postFacade->getPostById($id);
+    
+    if (!$post) {
+        $this->error('Post not found');
     }
+
+    $this->template->post = $post;
+}
 
     // Открывается при нажатии кнопки "Edit"
     public function renderEdit(int $id): void
-    {
-        $this->template->postId = $id;
+{
+    $post = $this->postFacade->getPostById($id);
+    
+    if (!$post) {
+        $this->error('Post not found');
     }
 
-    // --- 3. ОБРАБОТКА УДАЛЕНИЯ (HANDLE) ---
+   
+    $this['postForm']->setDefaults($post->toArray());
+    
+    $this->template->post = $post;
+}
+
     public function handleDelete(int $id): void
     {
-        // Удаляем пост через фасад
         $this->postFacade->deletePost($id);
 
         $this->flashMessage("Пост #$id был успешно изгнан в небытие.", 'success');
 
-        // Если запрос пришел через AJAX (Naja.js), перерисовываем только таблицу
         if ($this->isAjax()) {
             $this['grid']->reload();
         } else {
             $this->redirect('this');
         }
     }
+    protected function createComponentPostForm(): \Nette\Application\UI\Form
+{
+    $form = new \Nette\Application\UI\Form;
+
+    $form->addText('title', 'Title:')
+        ->setRequired('Put the text!');
+
+    $form->addTextArea('content', 'Content:')
+        ->setRequired('Where?')
+        ->setHtmlAttribute('rows', 10);
+
+    $form->addSubmit('send', 'Save');
+    $form->onSuccess[] = [$this, 'postFormSucceeded'];
+
+    return $form;
+}
+
+public function postFormSucceeded(\Nette\Application\UI\Form $form, array $values): void
+{
+    $postId = (int) $this->getParameter('id');
+    $this->postFacade->editPost($postId, $values);
+    $this->flashMessage('Success!', 'success');
+    $this->redirect('default');
+}
 }

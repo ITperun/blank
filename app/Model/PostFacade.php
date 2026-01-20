@@ -36,4 +36,14 @@ final class PostFacade
 {
     $this->database->table('posts')->where('id', $id)->delete();
 }
+
+public function getPostById(int $id): ?Nette\Database\Table\ActiveRow
+{
+    return $this->database->table('posts')->get($id);
+}
+
+public function editPost(int $id, array $data): void
+{
+    $this->database->table('posts')->where('id', $id)->update($data);
+}
 }

@@ -1,9 +1,16 @@
 {block content}
-    <h1 n:block=title>Заголовок поста</h1>
-
-    <div class="post-content">
-        <p>Здесь будет содержимое поста, которое ты передашь из renderDetail()...</p>
+    <p><a n:href="Post:default"> < GO back < </a></p>
+    <h1 class="mb-3">{$post->title}</h1>
+    <div class="text-muted mb-4">
+        <small>Published: {$post->created_at|date:'d.m.Y H:i'}</small>
     </div>
-
-    <a n:href="Post:default">← Вернуться назад</a>
+    <div class="card p-4 shadow-sm">
+        <div class="post-content">
+            {$post->content|breaklines}
+        </div>
+    </div>
+    
+    <div class="mt-3">
+         <a n:href="Post:edit $post->id" class="btn btn-warning">Edit</a>
+    </div>
 {/block}
