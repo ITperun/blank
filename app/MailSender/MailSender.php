@@ -32,7 +32,7 @@ class MailSender
         $mail->setFrom('rucickaigor@seznam.cz', 'E-shop MOP'); // Укажи здесь тот же email, что в конфиге
         $mail->addTo($recipient);
         $mail->setSubject('Nová objednávka: ' . $item);
-        $mail->setHtmlBody($template);
+        $mail->setHtmlBody((string) $template);
 
         return $mail;
     }
