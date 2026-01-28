@@ -20,7 +20,7 @@ CREATE TABLE `comments` (
   KEY `fk_comments_user` (`user_id`),
   CONSTRAINT `fk_comments_event` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_comments_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `event_participants`;
@@ -32,7 +32,7 @@ CREATE TABLE `event_participants` (
   KEY `fk_ep_user` (`user_id`),
   CONSTRAINT `fk_ep_event` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_ep_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `event_participants` (`event_id`, `user_id`, `joined_at`) VALUES
 (21,	1,	'2025-11-21 08:15:31');
@@ -54,7 +54,7 @@ CREATE TABLE `events` (
   KEY `fk_events_organizer` (`organizer_id`),
   CONSTRAINT `fk_events_game` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_events_organizer` FOREIGN KEY (`organizer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `events` (`id`, `title`, `description`, `location`, `start_time`, `end_time`, `game_id`, `organizer_id`, `status`, `created_at`) VALUES
 (15,	'Carcassonne Rodinný',	'Hra pro rodiny a přátele.',	'Brno, Dům her',	'2025-11-16 13:00:00',	'2025-11-16 16:00:00',	2,	1,	'approved',	'2025-11-04 13:24:43'),
@@ -84,7 +84,7 @@ CREATE TABLE `games` (
   `description` text,
   `image` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `games` (`id`, `name`, `genre`, `description`, `image`) VALUES
 (1,	'Catan',	'Strategy',	'Classic resource trading board game.',	NULL),
@@ -103,7 +103,7 @@ CREATE TABLE `notifications` (
   KEY `fk_notifications_event` (`event_id`),
   CONSTRAINT `fk_notifications_event` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_notifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- Новая таблица ролей
@@ -113,7 +113,7 @@ CREATE TABLE `roles` (
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Заполнение ролей: admin, user, moderator, organizer
 INSERT INTO `roles` (`id`, `name`) VALUES
@@ -137,7 +137,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `username` (`username`),
   KEY `fk_users_role` (`role_id`),
   CONSTRAINT `fk_users_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Пример пользователей с role_id (1=admin, 2=user, 3=moderator, 4=organizer)
 INSERT INTO `users` (`id`, `username`, `firstname`, `lastname`, `password`, `email`, `role_id`, `image`) VALUES
