@@ -50,15 +50,21 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 
 		// Handle form submission
 		$form->onSuccess[] = function (Form $form, \stdClass $data): void {
-			try {
-				// Attempt to login user
-				$this->getUser()->login($data->username, $data->password);
-				$this->restoreRequest($this->backlink);
-				$this->redirect(':Admin:Dashboard:');
-			} catch (Nette\Security\AuthenticationException) {
-				$form->addError('The username or password you entered is incorrect.');
-			}
-		};
+    try {
+        $this->getUser()->login($data->username, $data->password);
+
+        $this->restoreRequest($this->backlink);
+
+        if ($this->getUser()->isInRole('admin')) {
+            $this->redirect(':Admin:Dashboard:default');
+        } else {
+            $this->redirect(':Front:Home:default');
+        }
+    } catch (Nette\Security\AuthenticationException) {
+        $form->addError('The username or password you entered is incorrect.');
+    }
+};
+
 
 		return $form;
 	}
@@ -79,44 +85,28 @@ final class SignPresenter extends Nette\Application\UI\Presenter
         ->setRequired('Please enter your last name.');
 
     $form->addText('username', 'Pick a username:')
-        ->setRequired('Please pick a username.')
-        ->addRule($form::MIN_LENGTH, 'Username must be at least 3 characters.', 3);
-
-    $form->addText('birthdate', 'Date of birth:')
-        ->setHtmlType('date')
-        ->setRequired('Please enter your date of birth.');
+        ->setRequired('Please pick a username.');
 
     $form->addEmail('email', 'Your e-mail:')
         ->setRequired('Please enter your e-mail.');
 
     $form->addPassword('password', 'Create a password:')
-        ->setOption('description', 'at least 5 characters')
+        ->setOption('description', sprintf('at least %d characters', $this->userFacade::PasswordMinLength))
         ->setRequired('Please create a password.')
-        ->addRule($form::MIN_LENGTH, null, 5)
+        ->addRule($form::MinLength, null, $this->userFacade::PasswordMinLength)
         ->setHtmlAttribute('autocomplete', 'new-password');
 
     $form->addSubmit('send', 'Sign up');
 
     $form->onSuccess[] = function (Form $form, \stdClass $data): void {
-        // Проверка уникальности ника и почты
-        if ($this->userFacade->getByUsername($data->username)) {
-            $form['username']->addError('Username is already taken.');
-            return;
-        }
-        if ($this->userFacade->getByEmail($data->email)) {
-            $form['email']->addError('Email is already registered.');
-            return;
-        }
-
         try {
             $this->userFacade->add(
                 $data->username,
                 $data->email,
                 $data->password,
-                role: 'user',
+                role: null,
                 firstname: $data->firstname,
-                lastname: $data->lastname,
-                birthdate: $data->birthdate
+                lastname: $data->lastname
             );
             $this->redirect(':Admin:Dashboard:');
         } catch (DuplicateNameException) {

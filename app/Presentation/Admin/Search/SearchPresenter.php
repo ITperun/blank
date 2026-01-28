@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Admin\Search;
 
+use App\Presentation\Admin\BasePresenter;
 use Nette;
 use Nette\Application\UI\Form;
 use App\Model\UserFacade;
 
-final class SearchPresenter extends Nette\Application\UI\Presenter
+final class SearchPresenter extends BasePresenter
 {
     public function __construct(
         private UserFacade $userFacade

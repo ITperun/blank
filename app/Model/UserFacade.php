@@ -26,9 +26,8 @@ final class UserFacade implements Nette\Security\Authenticator
     	ColumnLastname = 'lastname',
     	ColumnPasswordHash = 'password',
     	ColumnEmail = 'email',
-    	ColumnRoleId = 'role_id',
-    	ColumnImage = 'image',
-    	ColumnBirthdate = 'birthdate';
+    	ColumnRole = 'role',
+    	ColumnImage = 'image';
 
 
 
@@ -46,10 +45,12 @@ final class UserFacade implements Nette\Security\Authenticator
 	 */
 	public function authenticate(string $username, string $password): Nette\Security\SimpleIdentity
 	{
+		// Fetch the user details from the database by username
 		$user = $this->database->table(self::TableName)
 			->where(self::ColumnName, $username)
 			->fetch();
 
+		// Authentication checks
 		if (!$user) {
 			throw new Nette\Security\AuthenticationException('The username is incorrect.', self::IdentityNotFound);
 
@@ -79,31 +80,10 @@ final class UserFacade implements Nette\Security\Authenticator
 
 	public function createIdentity(ActiveRow $user): Nette\Security\IIdentity
 	{
+		// Return user identity without the password hash
 		$arr = $user->toArray();
 		unset($arr[self::ColumnPasswordHash]);
-
-		// Получаем имя роли по role_id
-		$roleName = $this->getRoleNameById($user[self::ColumnRoleId]);
-		$arr['role'] = $roleName;
-
-		return new Nette\Security\SimpleIdentity($user[self::ColumnId], $roleName, $arr);
-	}
-
-	public function getRoleNameById(int $roleId): string
-	{
-		$row = $this->database->table('roles')->get($roleId);
-		return $row ? $row->name : 'user';
-	}
-
-	public function getRoleIdByName(string $roleName): ?int
-	{
-		$row = $this->database->table('roles')->where('name', $roleName)->fetch();
-		return $row ? $row->id : null;
-	}
-
-	public function getAllRoles(): array
-	{
-		return $this->database->table('roles')->fetchPairs('id', 'name');
+		return new Nette\Security\SimpleIdentity($user[self::ColumnId], $user[self::ColumnRole], $arr);
 	}
 
 
@@ -111,19 +91,10 @@ final class UserFacade implements Nette\Security\Authenticator
 	 * Add a new user to the database.
 	 * Throws a DuplicateNameException if the username is already taken.
 	 */
-public function add(
-    string $username,
-    string $email,
-    string $password,
-    ?string $role = null,
-    ?string $firstname = null,
-    ?string $lastname = null,
-    ?string $birthdate = null
-): ActiveRow
+public function add(string $username, string $email, string $password, ?string $role = null, ?string $firstname = null, ?string $lastname = null): ActiveRow
 {
     Nette\Utils\Validators::assert($email, 'email');
-    $roleName = $role ?? 'user';
-    $roleId = $this->getRoleIdByName($roleName) ?? $this->getRoleIdByName('user');
+    $role = $role ?? 'user';
 
     try {
         return $this->database->table(self::TableName)->insert([
@@ -132,19 +103,11 @@ public function add(
             self::ColumnLastname => $lastname,
             self::ColumnPasswordHash => $this->passwords->hash($password),
             self::ColumnEmail => $email,
-            self::ColumnRoleId => $roleId,
-            self::ColumnBirthdate => $birthdate,
+            self::ColumnRole => $role,
         ]);
     } catch (Nette\Database\UniqueConstraintViolationException $e) {
         throw new DuplicateNameException;
     }
-}
-
-public function getByEmail(string $email)
-{
-    return $this->database->table(self::TableName)
-        ->where(self::ColumnEmail, $email)
-        ->fetch();
 }
 
 
@@ -192,12 +155,10 @@ public function delete(int $userId): void
 public function search(string $keyword)
 {
     return $this->database->table('users')
-        ->select('users.*, roles.name AS role')
         ->whereOr([
             self::ColumnName . ' LIKE ?' => "%$keyword%",
             self::ColumnEmail . ' LIKE ?' => "%$keyword%",
         ])
-        ->order('users.id')
         ->fetchAll();
 }
 

@@ -19,16 +19,6 @@
         <header class="my-4 d-flex justify-content-between align-items-center">
             <h1>Administrace</h1>
 
-            <!-- ADMIN NAV -->
-            <nav class="me-3">
-                <ul class="nav">
-                    <li class="nav-item"><a n:href=":Admin:Dashboard:default" class="nav-link">Dashboard</a></li>
-                    <li class="nav-item"><a n:href=":Admin:User:default" class="nav-link">Uživatelé</a></li>
-                    <li class="nav-item"><a n:href=":Admin:Event:default" class="nav-link">Události</a></li>
-                    <li class="nav-item"><a n:href=":Admin:Search:default" class="nav-link">Hledat</a></li>
-                </ul>
-            </nav>
-
             <div class="d-flex align-items-center">
                 {* Кнопки для незалогиненных пользователей *}
                 <a n:if="!$user->isLoggedIn()" n:href=":Front:Sign:in" class="btn btn-primary me-2">
@@ -62,8 +52,13 @@
         {include content}
     </div>
 
-    {block scripts}
+{block scripts}
     <script src="https://unpkg.com/nette-forms@3"></script>
-    {/block}
+    <script src="https://unpkg.com/naja@2/dist/Naja.min.js"></script>
+    <script>
+        naja.initialize();
+    </script>
+{/block}
+
 </body>
 </html>

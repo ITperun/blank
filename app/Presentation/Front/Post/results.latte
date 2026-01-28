@@ -1,0 +1,16 @@
+{block content}
+<h2>Search results{if $keyword} for "{$keyword}"{/if}:</h2>
+
+{if $articles && count($articles)}
+	<ul class="list-group">
+	{foreach $articles as $a}
+		<li class="list-group-item">
+			{ifset $a->title}<h5>{$a->title}</h5>{/ifset}
+			{ifset $a->text}<p>{$a->text|truncate:200}</p>{/ifset}
+		</li>
+	{/foreach}
+	</ul>
+{else}
+	<p>0 matches.</p>
+{/if}
+{/block}

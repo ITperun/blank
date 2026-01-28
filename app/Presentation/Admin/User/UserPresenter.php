@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Presentation\Admin\User;
 
+use App\Presentation\Admin\BasePresenter;
 use Nette;
 use App\Model\UserFacade;
 
-final class UserPresenter extends Nette\Application\UI\Presenter
+final class UserPresenter extends BasePresenter
 {
     public function __construct(
         private UserFacade $userFacade
@@ -55,11 +56,11 @@ public function createComponentEditForm(): Nette\Application\UI\Form
         ->addRule(Nette\Forms\Form::IMAGE, 'Soubor musí být JPEG, PNG nebo GIF')
         ->setRequired(false);
 
-    // Получаем все роли из базы
     if ($this->user->isInRole('admin')) {
-        $roles = $this->userFacade->getAllRoles(); // [id => name]
-        $select = $form->addSelect('role', 'Role', $roles)
-            ->setPrompt('Vyberte roli');
+        $select = $form->addSelect('role', 'Role', [
+            'admin' => 'Admin',
+            'user' => 'User',
+        ]);
     }
 
     $existingUser = $this->userFacade->getUserById($targetId);
@@ -69,7 +70,7 @@ public function createComponentEditForm(): Nette\Application\UI\Form
         $form->setDefaults($formData);
 
         if ($this->user->isInRole('admin') && isset($select)) {
-            $select->setDefaultValue($existingUser->role_id);
+            $select->setDefaultValue($formData['role']);
         }
     }
 
@@ -84,12 +85,6 @@ public function editFormSucceeded(Nette\Application\UI\Form $form, \stdClass $va
     $valuesArray = (array) $values;
     $userId = (int) $this->getParameter('id');
     $userData = $this->userFacade->getUserById($userId);
-
-    // Обработка роли (если админ)
-    if ($this->user->isInRole('admin') && isset($valuesArray['role'])) {
-        $valuesArray['role_id'] = (int)$valuesArray['role'];
-        unset($valuesArray['role']);
-    }
 
     // Загрузка нового изображения
     if (!empty($valuesArray['image']) && $valuesArray['image']->getSize() > 0) {
@@ -160,12 +155,18 @@ public function handleDeleteImage(int $userId): void
         unlink(__DIR__ . '/../../../../www/' . $userData['image']);
     }
 
-    $data['image'] = null;
-    $this->userFacade->edit($userId, $data);
+    $this->userFacade->edit($userId, ['image' => null]);
 
-    $this->flashMessage('Obrázek k uživateli byl smazán.', 'success');
-    $this->redirect('this');
+    $this->flashMessage('Obrázek k uživateli byl smazán', 'success');
+
+    if ($this->isAjax()) {
+        $this->redrawControl('userImage'); // <- указываем snippet, который нужно обновить
+    } else {
+        $this->redirect('this');
+    }
 }
+
+
 
     private function checkEditPermissions(?int $id = null): int
     {
