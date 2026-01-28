@@ -1,9 +1,18 @@
 {block content}
-    <p>Vítejte na hlavní stránce!</p>
-    <div class="mt-4">
-        <h3>Testování emailu</h3>
-        <a n:href="sendEmail!" class="btn btn-primary">
-            📧 Odeslat testovací email
-        </a>
+    <div class="text-center mt-4">
+        <h1 class="text-primary display-4">test2</h1>
+        <p class="lead">test1.</p>
     </div>
+
+    <div class="card mt-5 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Send</h4>
+        </div>
+        <div class="card-body">
+            {* Вот тут мы выводим нашу новую форму *}
+            {control emailForm}
+        </div>
+    </div>
+    
+    {* Старую ссылку handleSendEmail можешь удалить, она нам больше не нужна! *}
 {/block}
