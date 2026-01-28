@@ -102,8 +102,9 @@ final class PostPresenter extends Presenter
         ->setRequired('Put the text!');
 
     $form->addTextArea('content', 'Content:')
-        ->setRequired('Where?')
-        ->setHtmlAttribute('rows', 10);
+    ->setRequired('Where?')
+    ->setHtmlAttribute('rows', 10)
+    ->setHtmlAttribute('class', 'tinymce');
 
     $form->addSubmit('send', 'Save');
     $form->onSuccess[] = [$this, 'postFormSucceeded'];
