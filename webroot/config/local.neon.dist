@@ -1,4 +1,4 @@
 database:
-    dsn: 'mysql:host=127.0.0.1;dbname=mop'
+    dsn: 'mysql:host=127.0.0.1;dbname=mydb'
     user: root
     password: 'root'
