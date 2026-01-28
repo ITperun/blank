@@ -1,4 +1,3 @@
-# file: Dockerfile
 FROM ubuntu:24.04
 
 LABEL maintainer="Martin Kokes"
@@ -27,7 +26,7 @@ RUN apt-get update \
 
 # install composer https://getcomposer.org/download/
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php composer-setup.php \
+    && php composer-setup.php --filename composer --install-dir=/bin \
     && php -r "unlink('composer-setup.php');"
 
 RUN apt install -y mariadb-server
@@ -35,6 +34,10 @@ RUN apt install -y mariadb-server
 COPY sites-available /etc/nginx/sites-available
 
 COPY webroot /usr/share/nginx/webroot
+
+WORKDIR /usr/share/nginx/webroot
+RUN ["composer", "update"]
+RUN ["chown", "-R", "www-data:www-data", "/usr/share/nginx/webroot"]
 
 EXPOSE 80
 
@@ -46,5 +49,3 @@ RUN ["chmod", "+x", "/tmp/init_db.sh"]
 RUN /tmp/init_db.sh
 
 ENTRYPOINT ["sh", "-c", "service mariadb start && service php8.3-fpm start && nginx -g 'daemon off;'"]
-# docker build -t nazevimage ./
-# docker run -it --name nazevkontejneru -p 8080:80 nazevimage

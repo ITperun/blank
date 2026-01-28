@@ -1,0 +1,207 @@
+{import 'form-bootstrap5.latte'}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+
+    <title>{ifset title}{include title|stripHtml} | {/ifset}Klub deskových her</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          crossorigin="anonymous">
+
+    <style>
+        :root {
+            --orange-main: #f79c42;
+            --orange-light: #fff1dc;
+            --orange-dark: #d77b1f;
+            --bg-body: #fffaf4;
+            --bg-card: #ffffff;
+            --text-dark: #3b2a20;
+            --shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-body);
+            font-family: "Segoe UI", "Roboto", sans-serif;
+            color: var(--text-dark);
+            background-image: radial-gradient(circle at top left, #fff4e5 0%, #fffaf4 40%, #fffaf4 100%);
+        }
+
+        .container {
+            flex: 1 0 auto;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+            background: linear-gradient(90deg, var(--orange-main), var(--orange-dark));
+            color: white;
+            padding: 1rem 0.5rem;
+            border-bottom: 4px solid #d06b12;
+            box-shadow: var(--shadow);
+            border-radius: 0 0 12px 12px;
+        }
+        header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; }
+        header a { color: #fff; text-decoration: none; font-weight: 500; transition: all 0.2s; }
+        header a:hover { color: #fff8f0; transform: scale(1.03); }
+
+        .hero {
+            margin-top: 2rem;
+            background: linear-gradient(180deg, #fff7ed, #fffaf4);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 2rem 2.5rem;
+            text-align: center;
+        }
+        .hero h2 { color: var(--orange-dark); font-weight: 700; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .hero p { color: #6a5038; font-size: 1.1rem; margin-bottom: 0; }
+
+        main {
+            background-color: var(--bg-card);
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+
+        .event-preview { margin-top: 2rem; }
+        .event-card {
+            background: var(--orange-light);
+            border-left: 5px solid var(--orange-main);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.12);
+        }
+
+        footer {
+            flex-shrink: 0;
+            color: #775a3a;
+            text-align: center;
+            padding: 1.5rem 0;
+            font-size: 0.9rem;
+            background: var(--orange-light);
+            border-top: 2px solid #f3b36a;
+            border-radius: 12px 12px 0 0;
+            margin-top: auto;
+        }
+
+        .btn-primary { background-color: var(--orange-main); border: none; }
+        .btn-primary:hover { background-color: var(--orange-dark); }
+        .btn-secondary { background-color: #fff; color: var(--orange-dark); border: 1px solid var(--orange-main); }
+        .btn-secondary:hover { background-color: var(--orange-light); }
+
+        .alert { border-radius: 8px; }
+
+        .nav-user img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #fff3e0; margin-right: 10px; box-shadow: 0 0 3px rgba(0,0,0,0.2); }
+        .user-info { display: flex; flex-direction: column; line-height: 1.1; color: white; }
+        .user-info .name { font-weight: 600; }
+        .user-info .role { font-size: 0.85rem; color: #ffe6c9; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="d-flex justify-content-between align-items-center px-3">
+            <h1>🎲 Klub deskových her</h1>
+
+            <!-- NAVIGATION -->
+            <nav class="d-none d-md-flex align-items-center me-3">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a n:href=":Front:Home:default" class="nav-link text-white px-2">Domů</a>
+                    </li>
+                    <li class="nav-item">
+                        <a n:href=":Front:Event:default" class="nav-link text-white px-2">Události</a>
+                    </li>
+                    {if $user->isLoggedIn() && in_array($user->identity->role, ['admin','creator','organizer','moderator'])}
+                        <li class="nav-item">
+                            <a n:href=":Front:Event:create" class="nav-link text-white px-2">Vytvořit událost</a>
+                        </li>
+                    {/if}
+                    {if $user->isLoggedIn() && $user->identity->role === 'admin'}
+                        <li class="nav-item">
+                            <a n:href=":Admin:Dashboard:default" class="nav-link text-white px-2">Admin</a>
+                        </li>
+                    {/if}
+                </ul>
+            </nav>
+
+            <div class="d-flex align-items-center">
+                {if !$user->isLoggedIn()}
+                    <a n:href=":Front:Sign:in" class="btn btn-primary me-2">Přihlásit</a>
+                    <a n:href=":Front:Sign:up" class="btn btn-secondary">Registrovat</a>
+                {else}
+                    <div class="d-flex align-items-center nav-user">
+                        <img src="{$basePath}/{$user->identity->image ?: 'upload/avatars/default.png'}" alt="Avatar">
+                        <div class="user-info me-3">
+                            <span class="name">{$user->identity->firstname} {$user->identity->lastname}</span>
+                            <span class="role">{$user->identity->role|capitalize}</span>
+                        </div>
+                        <a n:href=":Front:Sign:out" class="btn btn-sm btn-light text-dark">Odhlásit</a>
+                    </div>
+                {/if}
+            </div>
+        </header>
+
+        {* Показывать только на главной странице *}
+        {if $presenter->name === 'Front:Home:Home'}
+            <div class="hero">
+                <p>Objevujte nové hry, poznávejte přátele a zažijte zábavu u našeho společného stolu.</p>
+            </div>
+
+            <div class="event-preview">
+    <h3 class="mb-3">🧩 Nadcházející události</h3>
+
+    {if isset($events) && count($events)}
+        {foreach $events as $upcomingEvent}
+            <div class="event-card">
+                <h5 class="mb-1 fw-bold text-dark">{$upcomingEvent->title}</h5>
+                <p class="mb-1"><small><strong>Datum:</strong> {$upcomingEvent->start_time|date:'j. n. Y H:i'}</small></p>
+                <p class="mb-2">{$upcomingEvent->description|truncate:120}</p>
+
+                {if !$user->isLoggedIn()}
+                    <a n:href=":Front:Sign:in" class="btn btn-sm btn-primary">Přihlásit se k účasti</a>
+                {else}
+                    <a n:href=":Front:Event:detail, id => $upcomingEvent->id" class="btn btn-sm btn-primary">Zobrazit / Přijmout účast</a>
+                {/if}
+            </div>
+        {/foreach}
+    {else}
+        <div class="alert alert-warning">Zatím nejsou žádné plánované události…</div>
+    {/if}
+</div>
+        {/if}
+
+        <main>
+            {foreach $flashes as $flash}
+                <div class="alert alert-{$flash->type} mt-2">{$flash->message}</div>
+            {/foreach}
+
+            {include content}
+        </main>
+    </div>
+
+    <footer>
+        &copy; {date('Y')} Klub deskových her — školní projekt (MOP)
+    </footer>
+
+    {block scripts}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://unpkg.com/nette-forms@3"></script>
+    {/block}
+</body>
+</html>
