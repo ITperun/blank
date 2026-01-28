@@ -1,0 +1,28 @@
+# sites-available/default.conf
+
+# nginx virtual host configuration
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/webroot;
+
+    index index.php index.html index.htm index.nginx-debian.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+  # pass PHP scripts on Nginx to FastCGI (PHP-FPM) server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+
+        # Nginx php-fpm sock config:
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        # Nginx php-cgi config :
+        # Nginx PHP fastcgi_pass 127.0.0.1:9000;
+    }
+
+    location ~ /\.ht {
+        deny  all;
+    }
+}
