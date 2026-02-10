@@ -5,6 +5,7 @@ services:
 	- App\Model\PostFacade
 	- App\Model\UserFacade
 	- App\MailSender\MailSender
+	- App\Model\LocationFacade
 
 
 search:

@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Presentation\Front\Home;
 
 use Nette\Application\UI\Presenter;
-use Nette\Application\UI\Form; // <-- Важно! Не забудь эту строку
+use Nette\Application\UI\Form;
 use App\MailSender\MailSender;
+use App\Model\LocationFacade;
 
 final class HomePresenter extends Presenter
 {
     public function __construct(
-        private MailSender $mailSender
+        private MailSender $mailSender,
+        private LocationFacade $locationFacade
     ) {
         parent::__construct();
     }
@@ -21,9 +23,6 @@ final class HomePresenter extends Presenter
         $this->template->title = 'Moje (DEV) MOP';
     }
 
-    // --- НАЧАЛО НОВОГО КОДА ---
-
-    // 1. Создаем форму
     protected function createComponentEmailForm(): Form
     {
         $form = new Form;
@@ -34,11 +33,10 @@ final class HomePresenter extends Presenter
         $form->addText('subject', 'Tema:')
             ->setRequired('write teme.');
 
-        // ВОТ ЗДЕСЬ ИЗМЕНЕНИЕ:
         $form->addTextArea('message', 'Content:')
             ->setRequired('Content.')
             ->setHtmlAttribute('rows', 5)
-            ->setHtmlAttribute('class', 'tinymce'); // <--- Добавляем класс 'tinymce', чтобы включился редактор!
+            ->setHtmlAttribute('class', 'tinymce');
 
         $form->addSubmit('send', 'Send Email');
 
@@ -47,19 +45,14 @@ final class HomePresenter extends Presenter
         return $form;
     }
 
-    // 2. Обрабатываем отправку формы
     public function emailFormSucceeded(Form $form, \stdClass $values): void
     {
-        // Здесь мы берем данные, которые ты ввела в форму ($values)
-        // $values->recipient - это адрес из поля 'recipient'
-        // $values->subject - это тема из поля 'subject'
-        // $values->message - это текст из поля 'message'
 
         $mail = $this->mailSender->createNotificationEmail(
-            $values->recipient, // Сюда подставится адрес из формы!
-            "User",             // Имя (можно тоже добавить в форму, если нужно)
-            $values->subject,   // Тема из формы
-            $values->message    // Текст из формы
+            $values->recipient,
+            "User",
+            $values->subject,
+            $values->message
         );
 
         $this->mailSender->sendEmail($mail);
@@ -68,7 +61,49 @@ final class HomePresenter extends Presenter
         $this->redirect('this');
     }
 
-    // --- КОНЕЦ НОВОГО КОДА ---
-    
-    // Старый метод handleSendEmail удален, чтобы не мешался.
+    /** @var int|null @persistent */
+    public $countryId = null;
+
+    protected function createComponentDependentForm(): Form
+    {
+        $form = new Form;
+
+        $form->addSelect('country', 'Země:', $this->locationFacade->getCountries())
+            ->setPrompt('Vyberte zemi...')
+            ->setHtmlAttribute('data-ajax-change')
+            ->setRequired('Musíte vybrat zemi.');
+
+        if ($this->countryId) {
+            $form['country']->setDefaultValue($this->countryId);
+        }
+
+        $cities = [];
+        if ($this->countryId) {
+            $cities = $this->locationFacade->getCities((int)$this->countryId);
+        }
+
+        $form->addSelect('city', 'Město:', $cities)
+            ->setPrompt($this->countryId ? 'Vyberte město...' : 'Nejprve vyberte zemi')
+            ->setDisabled(!$this->countryId);
+
+        $form->addSubmit('send', 'Odeslat');
+
+        $form->onSuccess[] = [$this, 'dependentFormSucceeded'];
+
+        return $form;
+    }
+    public function handleUpdateCity($val): void
+    {
+        $this->countryId = $val ? (int)$val : null;
+        if ($this->isAjax()) {
+            $this->redrawControl('formSnippet');
+        }
+    }
+
+    public function dependentFormSucceeded(Form $form, \stdClass $values): void
+    {
+        $this->flashMessage("Vybrala jsi zemi ID: $values->country a město ID: $values->city", 'success');
+        $this->redirect('this');
+    }
+
 }
