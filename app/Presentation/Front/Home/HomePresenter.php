@@ -33,10 +33,12 @@ final class HomePresenter extends Presenter
         $form->addText('subject', 'Tema:')
             ->setRequired('write teme.');
 
+        $form->addUpload('customImage', 'Obrázek (příloha):')
+            ->addRule(Form::IMAGE, 'Obrázek musí být JPEG, PNG nebo GIF.');
+
         $form->addTextArea('message', 'Content:')
             ->setRequired('Content.')
-            ->setHtmlAttribute('rows', 5)
-            ->setHtmlAttribute('class', 'tinymce');
+            ->setHtmlAttribute('rows', 5);
 
         $form->addSubmit('send', 'Send Email');
 
@@ -47,17 +49,17 @@ final class HomePresenter extends Presenter
 
     public function emailFormSucceeded(Form $form, \stdClass $values): void
     {
-
         $mail = $this->mailSender->createNotificationEmail(
             $values->recipient,
             "User",
             $values->subject,
-            $values->message
+            $values->message,
+            $values->customImage
         );
 
         $this->mailSender->sendEmail($mail);
 
-        $this->flashMessage('Email успешно отправлен!', 'success');
+        $this->flashMessage('Email s obrázkem úspěšně odeslán!', 'success');
         $this->redirect('this');
     }
 

@@ -7,6 +7,7 @@ namespace App\MailSender;
 use Nette\Application\UI\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Mail\Mailer;
+use Nette\Http\FileUpload;
 
 class MailSender
 {
@@ -15,11 +16,10 @@ class MailSender
         private TemplateFactory $templateFactory
     ) {}
 
-    // Метод создания письма
-    public function createNotificationEmail(string $recipient, string $name, string $item, string $note): Message
+    public function createNotificationEmail(string $recipient, string $name, string $item, string $note, ?FileUpload $uploadedFile = null): Message
     {
         $mail = new Message;
-        $mail->setFrom('ilyaperun@seznam.cz', 'E-shop MOP'); //
+        $mail->setFrom('ilyaperun@seznam.cz', 'E-shop MOP');
         $mail->addTo($recipient);
         $mail->setSubject('Nová objednávka: ' . $item);
 
@@ -30,10 +30,19 @@ class MailSender
 
         $imagePath = __DIR__ . '/../../www/upload/avatars/default.png';
         $cid = null;
-        
         if (file_exists($imagePath)) {
             $embedded = $mail->addEmbeddedFile($imagePath);
             $cid = trim($embedded->getHeader('Content-ID'), '<>');
+        }
+
+        $customCid = null;
+        if ($uploadedFile && $uploadedFile->isOk() && $uploadedFile->isImage()) {
+            $customEmbedded = $mail->addEmbeddedFile(
+                $uploadedFile->getSanitizedName(),
+                $uploadedFile->getContents(),
+                $uploadedFile->getContentType()
+            );
+            $customCid = trim($customEmbedded->getHeader('Content-ID'), '<>');
         }
 
         $template = $this->templateFactory->createTemplate();
@@ -42,8 +51,8 @@ class MailSender
         $template->name = $name;
         $template->item = $item;
         $template->note = $note;
-        
-        $template->cid = $cid; 
+        $template->cid = $cid;
+        $template->customCid = $customCid;
 
         $mail->setHtmlBody((string) $template);
 
