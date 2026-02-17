@@ -22,12 +22,19 @@
             <li><strong>Zboží:</strong> {$item}</li>
             <li><strong>Poznámka:</strong> {$note}</li>
         </ul>
-        
-        <p>Brzy Vás budeme kontaktovat ohledně doručení.</p>
-    </div>
 
-    <div class="footer">
-        <p>Váš oblíbený E-shop MOP</p>
+        <hr>
+
+        <p>Naše logo (Base64):</p>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA0klEQVQ4T6WTsQ3CMBCGvyMpKysTNIAiYQAmYASmYASMgAkhYRRGYAQySrJCIxZ0cI6T6LCS852/+/93fryE4+u74681C3bABTj/R2ANHIFD27xVwBw4A2f5vQfWwB44tx1fA0xCTx33wF1J9cAk9NxxD9yV1ABMQs8d98BdSQPAJPTccQ/clTQBTELPHffAXUkLwCT03HEP3JW0A0xCzx33wF1JB8Ak9NxxD9yVdAJMQs8d98BdSRfAJPTccQ/clfQATEI/d2wG6sADuP0BwQ8LR270834AAAAASUVORK5CYII=" alt="Logo Srdce">
+        
+        <br><br>
+
+
+        <p n:if="$cid">Obrázek v příloze (CID):</p>
+        <img n:if="$cid" src="cid:{$cid}" alt="Embedded Image" style="max-width: 100px;">
+
+        <p>Brzy Vás budeme kontaktovat ohledně doručení.</p>
     </div>
 </body>
 </html>
