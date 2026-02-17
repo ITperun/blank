@@ -68,13 +68,13 @@ final class HomePresenter extends Presenter
     {
         $form = new Form;
 
-        $form->addSelect('country', 'Země:', $this->locationFacade->getCountries())
+        $country = $form->addSelect('country', 'Země:', $this->locationFacade->getCountries())
             ->setPrompt('Vyberte zemi...')
             ->setHtmlAttribute('data-ajax-change')
             ->setRequired('Musíte vybrat zemi.');
 
         if ($this->countryId) {
-            $form['country']->setDefaultValue($this->countryId);
+            $country->setDefaultValue($this->countryId);
         }
 
         $cities = [];
