@@ -1,8 +1,21 @@
 {block content}
-    <h2 class="mb-4 text-primary">Список постов для Куми</h2>
-    
-    <div class="bg-white p-3 border rounded shadow-sm">
-        {* Вот наше заклинание вызова грида *}
-        {control grid}
+    <h2>Post list</h2>
+
+    <div n:foreach="$posts as $post" class="post">
+        <h3>{$post->title}</h3>
+    </div>
+
+    <div class="pagination mt-4">
+        {if !$paginator->isFirst()}
+            <a n:href="default, 1" class="btn btn-sm btn-outline-primary">First</a>
+            <a n:href="default, $paginator->page - 1" class="btn btn-sm btn-outline-primary">Back</a>
+        {/if}
+
+        <span class="mx-2">Page {$paginator->page} of {$paginator->pageCount}</span>
+
+        {if !$paginator->isLast()}
+            <a n:href="default, page: $paginator->page - 1" class="btn btn-sm btn-outline-primary">Back</a>
+            <a n:href="default, page: $paginator->page + 1" class="btn btn-sm btn-outline-primary">Forward</a>
+        {/if}
     </div>
 {/block}
