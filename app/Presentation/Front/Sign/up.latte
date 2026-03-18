@@ -1,8 +1,49 @@
-{* The sign-up page *}
-
 {block content}
 <h1 n:block=title>Sign Up</h1>
 
-{include bootstrap-form signUpForm}
+<form n:name="signUpForm" class="form-horizontal">
+    <ul class="alert alert-danger" n:ifcontent>
+        <li n:foreach="$form->ownErrors as $error">{$error}</li>
+    </ul>
+
+    <div class="mb-3 row">
+        {label firstname class => "col-sm-3 col-form-label" /}
+        <div class="col-sm-9">{input firstname class => "form-control"}</div>
+    </div>
+    <div class="mb-3 row">
+        {label lastname class => "col-sm-3 col-form-label" /}
+        <div class="col-sm-9">{input lastname class => "form-control"}</div>
+    </div>
+    <div class="mb-3 row">
+        {label username class => "col-sm-3 col-form-label" /}
+        <div class="col-sm-9">{input username class => "form-control"}</div>
+    </div>
+    <div class="mb-3 row">
+        {label email class => "col-sm-3 col-form-label" /}
+        <div class="col-sm-9">{input email class => "form-control"}</div>
+    </div>
+    <div class="mb-3 row">
+        {label password class => "col-sm-3 col-form-label" /}
+        <div class="col-sm-9">
+            {input password class => "form-control"}
+            <span class="form-text">{$form['password']->getOption('description')}</span>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <div class="col-sm-9 offset-sm-3">
+            <div class="g-recaptcha" data-sitekey="{$siteKey}"></div>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <div class="col-sm-9 offset-sm-3">
+            {input send class => "btn btn-primary"}
+        </div>
+    </div>
+</form>
 
 <p class="text-center"><a n:href="in">Already have an account? Log in.</a></p>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{/block}

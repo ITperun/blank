@@ -1,6 +1,9 @@
 # Application parameters and settings. See https://doc.nette.org/configuring
 
 parameters:
+	recaptcha:
+		siteKey: '6Leyqo4sAAAAAHNaVqNB0XXcuCxfBfdKXHIJCQcA'
+		secretKey: '6Leyqo4sAAAAAC1Eq5g98fDNq6fGig3FXqiMzzrh'
 
 
 application:
